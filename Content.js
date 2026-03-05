@@ -53,7 +53,8 @@ function applyVisibility(hide) {
         '.buttons-container.adv-upsell.ng-star-inserted',
         '.gds-label-m-alt.desktop-spacing.ng-star-inserted',
         '.boqOnegoogleliteOgbOneGoogleBar',
-        '.top-bar-actions'
+        '.top-bar-actions',
+        '.hallucination-disclaimer'
     ];
     selectors.forEach(selector => {
         const els = document.querySelectorAll(selector);
