@@ -1,30 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            width: 250px;
-            padding: 15px;
-            font-family: sans-serif;
-            text-align: center;
+        :root {
+            --primary: #4285f4;
+            --bg: #ffffff;
+            --text: #3c4043;
+            --secondary-text: #5f6368;
+            --border: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        h3 { margin-top: 0; color: #333; }
-        input[type=range] {
+
+        body {
+            width: 280px;
+            padding: 20px;
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .header img {
+            width: 32px;
+            height: 32px;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        #hint {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin: 0 0 12px 0;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
             width: 100%;
-            margin: 15px 0;
+            height: 6px;
+            background: var(--border);
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Modern Checkbox/Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        .footer {
+            font-size: 10px;
+            color: var(--secondary-text);
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <h3 id="title">Gemini Width</h3>
-    <input type="range" id="widthSlider" min="600" max="1800" value="900" step="10">
-    <p id="hint">Use the slider to adjust width.</p>
+    <div class="header">
+        <img src="logo.png" alt="Logo">
+        <h3 id="title">Wide-Gemini</h3>
+    </div>
 
-    <label style="display: flex; align-items: center; justify-content: center; margin: 10px auto 0 auto; gap: 8px;">
-        <span>Clean view</span>
-        <input type="checkbox" id="cleanView">
-    </label>
+    <div class="section">
+        <p id="hint">Adjust workspace width</p>
+        <input type="range" id="widthSlider" min="600" max="2560" value="1800" step="10">
+    </div>
+
+    <div class="toggle-container">
+        <span class="toggle-label">Clean View</span>
+        <label class="switch">
+            <input type="checkbox" id="cleanView" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="footer">
+        v1.2.6 &bull; Secure & Performance Optimized
+    </div>
     
     <script src="popup.js"></script>
 </body>

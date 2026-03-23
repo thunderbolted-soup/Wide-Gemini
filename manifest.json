@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Wide-Gemini",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "action": {
@@ -15,13 +15,26 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://gemini.google.com/*"],
-      "js": ["Content.js"],
+      "matches": [
+        "https://gemini.google.com/*"
+      ],
+      "js": [
+        "Content.js"
+      ],
       "run_at": "document_end"
     }
   ],
   "permissions": [
     "storage",
     "activeTab"
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wide-gemini@example.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

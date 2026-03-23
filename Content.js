@@ -1,8 +1,11 @@
-// Content.js - 팝업의 신호를 받아 실제 페이지 너비와 요소 표시/숨김을 처리합니다.
+// Content.js - Handles page width and element visibility via CSS injection.
 
-// 너비를 적용하는 함수
-function applyWidth(width) {
-    const styleId = 'gemini-wide-style';
+/**
+ * Applies the custom width and visibility settings by injecting/updating a style tag.
+ * Using CSS is much more efficient than MutationObserver for hiding elements.
+ */
+function applySettings(width, cleanView) {
+    const styleId = 'gemini-wide-extension-style';
     let styleTag = document.getElementById(styleId);
 
     if (!styleTag) {
@@ -11,23 +14,33 @@ function applyWidth(width) {
         document.head.appendChild(styleTag);
     }
 
-    // CSS를 사용하여 너비 강제 적용 (최신 Gemini 클래스 반영)
+    const selectorsToHide = [
+        '.desktop-ogb-buffer',
+        '.buttons-container.adv-upsell',
+        '.gds-label-m-alt.desktop-spacing',
+        '.boqOnegoogleliteOgbOneGoogleBar',
+        '.top-bar-actions',
+        '.hallucination-disclaimer',
+        'aside[data-test-id="sidebar"] + div + div > div:has(a[href*="plan"])' // Example of dynamic upsell
+    ];
+
+    const hideCss = cleanView 
+        ? `${selectorsToHide.join(',\n')} { display: none !important; }` 
+        : '';
+
     styleTag.textContent = `
-        /* 대화 영역 및 하단 입력창 너비 조절 */
+        /* Main conversation and input area width */
         .conversation-container,
         .bottom-container,
-        main > div:has(.conversation-container) {
-            max-width: ${width}px !important;
-            width: 100% !important;
-        }
-
-        /* user-query w środku conversation-container */
+        main > div:has(.conversation-container),
         .conversation-container user-query {
             max-width: ${width}px !important;
             width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
-        /* 입력창 내부 요소 너비 맞춤 */
+        /* Input area styling */
         .input-area-container:not(.is-zero-state), form {
             max-width: ${width}px !important;
             width: 100% !important;
@@ -43,48 +56,22 @@ function applyWidth(width) {
         [class*="user-query-container"] {
             padding-bottom: 0px !important;
         }
+
+        /* Clean View specific styles */
+        ${hideCss}
     `;
 }
 
-// "정리된 보기"를 위해 모든 불필요한 요소를 숨기거나 표시하는 함수
-function applyVisibility(hide) {
-    const selectors = [
-        '.desktop-ogb-buffer',
-        '.buttons-container.adv-upsell.ng-star-inserted',
-        '.gds-label-m-alt.desktop-spacing.ng-star-inserted',
-        '.boqOnegoogleliteOgbOneGoogleBar',
-        '.top-bar-actions',
-        '.hallucination-disclaimer'
-    ];
-    selectors.forEach(selector => {
-        const els = document.querySelectorAll(selector);
-        els.forEach(el => el.style.display = hide ? 'none' : 'block');
-    });
-}
-
-// DOM 변화를 관찰하고 cleanView가 활성화되었을 때 요소를 즉시 적용하는 함수
-function observeDOM(cleanView) {
-    const observer = new MutationObserver(() => applyVisibility(cleanView));
-    observer.observe(document.body, { childList: true, subtree: true });
-    // 페이지 로드 시 바로 적용
-    applyVisibility(cleanView);
-}
-
-// popup.js로부터 메시지 수신 리스너
-chrome.runtime.onMessage.addListener(function(request) {
-    if (request.action === "setWidth") {
-        applyWidth(request.width);
-    } else if (request.action === "updateSettings") {
-        applyWidth(request.width);
-        applyVisibility(request.cleanView);
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener((request) => {
+    if (request.action === "updateSettings") {
+        applySettings(request.width, request.cleanView);
     }
 });
 
-// 페이지 로드 시 저장된 설정을 즉시 적용
-chrome.storage.local.get(['geminiWidth', 'cleanView'], function(result) {
-    const initialWidth = result.geminiWidth || 1800;
+// Apply initial settings on load
+chrome.storage.local.get(['geminiWidth', 'cleanView'], (result) => {
+    const width = result.geminiWidth || 1800;
     const cleanView = result.cleanView !== false;
-
-    applyWidth(initialWidth);
-    observeDOM(cleanView);
+    applySettings(width, cleanView);
 });
